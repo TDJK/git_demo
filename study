@@ -1,0 +1,380 @@
+vue
+	MVVM
+		Model
+		ViewModel
+		View
+		视图和数据没有直接联系,通过viewmodel 进行交互
+		原理
+			采用数据劫持,Object.defineProperty 的 getter 和 setter 结合观察者模式实现数据绑定
+	父子组件加载生命周期
+		加载渲染阶段
+		更新阶段
+		销毁阶段
+	挂载过程中发生了什么
+		初始化
+		建立更新机制
+	响应式原理
+		vue2
+			根据数据类型不同做不同的处理
+     【对象】通过Object.defineProperty(obj,key,descriptor)拦截对象属性访问，当数据被访问或改变时，感知并做出反应
+     【数组】通过覆盖数组原生方法，扩展他的七个变更方法（push/pop/shift/unshift/splice/sort）使这些方法可以做出额外的更新通知做出响应
+			bad
+				初始化时的递归遍历会造成性能损失
+				通知更新过程需要维护大量 dep实例和watcher实例，额外占用内存较多
+				新增或删除对象属性无法拦截，需要通过Vue.set 和 delete 这样的api才能生效
+				对于ES6中的map/set 数据结构不支持
+			初始化数据循环遍历利用 proxy 将数据代理到 vm 上
+			调用 observe 方法,初始化 dep 对象, 判断数据是否为数组,是数组观察数组 有直接用没有创建观察对象,不是通过defineReactive添加 get / set ,属性被访问调用 getter ,判断dep目标不为空时,收集依赖,如果访问为数组遍历收集依赖,data 数据改变时调用setter,调用dep.notify() 通知,遍历所有的watcher update更新
+		vue3
+			采用proxy 机制代理需要响应化的数据，可以同时支持对象和数组，动态属性增、删可以拦截，新增数据结构均支持，对象嵌套属性运行时递归，用到时才代理，不需要维护过多的依赖关系
+	双向绑定
+		new Vue() 执行初始化，对data 执行响应化处理 --- observe
+		对模板执行编译，找到其中动态绑定的数据，从data 中获取并初始化视图 --- comile
+		定义一个更新函数和 watcher 将对应数据变化时 watcher 会调用更新函数
+		由于data 的某个key 一个视图可能出现多次，每个key 需要一个dep 来管理多个watcher
+		将来data 数据一旦发生变化，会首先找到对应的dep 通知所有watcher执行更新函数
+	虚拟dom
+		【是一个JS对象，通过不同的属性去描述一个视图结构】
+		good
+			性能提升、减少频繁操作dom容易引起页面的重绘和回流
+			方便跨平台实现
+	diff算法
+		通过对比新旧虚拟dom,得出那个虚拟节点发生改变，只更新这个虚拟节点对应的真实节点
+		【深度优先】【由两边向中间比较】
+	key的作用
+		高效更新虚拟dom【判断两个节点是否相同时，主要判断两者的key 和元素类型tag，不设置key他的值为 undefined,将造成大量的dom更新操作】
+	v-if / v-show
+		控制手段不同
+			v-show : 元素显示隐藏 
+v-if 元素创建删除
+		编译过程不同
+			v-show : 简单的css 切换
+v-if ：有局部编译卸载过程
+		编译条件不同
+			v-show : 真假都已渲染
+v-if : 真才渲染、假无操作
+		触发生命周期不同
+			v-show : 不触发组件生命周期
+v-if : 触发生命周期（beforeCreate /create/beforeMount/mounted）
+		性能消耗不同
+			v-show : 初始化渲染消耗
+v-if : 切换渲染消耗
+	nextTick
+		下次DOM更新循环结束之后执行延迟回调，在修改数据之后立即使用该方法，获取更新后的DOM
+	渐进式框架
+		可以用你想用或能用的功能，vue 不强求一次性接受并使用他的全部功能特性
+	spa
+		概念
+			是一种网络应用程序或网站的模型
+			通过动态重写当前页面来与用户交互，这种方法避免了页面之间切换打断用户体验
+			所有必要的代码（HTML、JavaScript和CSS）都通过单个页面的加载而检索，或者根据需要（通常是为响应用户操作）动态装载适当的资源并添加到页面页面在任何时间点都不会重新加载
+	路由模式
+		hash
+			不会包含在http请求中，对后端完全没有影响，不会重新加载页面
+			【原理】主要原理就是onhashchange()事件
+		history
+			路由分发模式,输入一个URL时，服务器会接受这个请求，并解析URL做出相应处理
+			后端如果没有定义路径，页面容易出现404
+		动态路由
+			前端实现：根据用户角色权限来动态展示路由
+			后端实现：通过接口获取当前用户对应路由列表并进行渲染
+	生命周期
+		created
+			组件实例一旦创建完成后立即调用，dom 节点还未生成
+			可以访问实例对象属性和方法
+			不能访问到 dom
+			适合请求
+		mounted
+			页面dom 节点渲染完毕后立即执行
+			可以访问实例对象属性和方法
+			可以访问dom
+			页面已经渲染完毕，请求对页面改动可能会导致页面闪动
+	vue构建入口
+		使用方式
+			脚手架直接创建
+			html头部引入
+		构建入口
+			package.json
+		npm run build做了什么
+			子主题
+	import vue form 'vue
+		一个原型上挂在了好多方法的构造函数
+	new vue
+		对构造函数vue 进行实例化
+			调用_init 方法 定义$set/$get/$delete/$watch/$on/$off/$emit/$of/$forceUpdate/$destory生命周期
+			$mount 进行页面挂载【mountComponent】
+			【updateComponent】更新函数
+			执行render 生成虚拟 DOM
+			_update 将虚拟DOM生成真实DOM结构，并且渲染到页面中
+	编译
+	渲染
+		模板渲染
+		组件渲染
+		抽象语法树
+			【模板语法】--->【抽象语法树AST】--->【渲染函数（h函数）】--->【虚拟节点】--->【界面】
+	vue3
+		组合式API
+			解决组件功能变复杂后可读性差问题
+			解决代码复用缺点问题
+				【mixins缺点】
+					重名冲突
+					同一文件用多个mixin文件时依赖关系不清晰
+					逻辑复用不灵活，多个组件使用同一mixin，存在差异处理不灵活
+					属性来源不清楚
+			解决TS支持有限
+		服务端渲染
+			将渲染成html 的操作放到服务端完成，然后再把html直接返回给客户端
+			good
+				更好的seo,首屏加载速度快
+			bad
+				服务端只支持beforecreate和created两个钩子，当我们需要一些外部扩展库时需要特殊处理，服务器会有更大的负载需求
+		支持多个根节点
+			减少标签层级，减少内存占用
+		diff算法优化
+			添加了静态标记，下次更新直接定位该处，已标记为静态节点的元素不会参与 diff 比较
+			头和头比较、尾和尾比较、基于最长子序列操作
+		静态提升
+			对于不参与更新的元素，做静态提升，只会被创建一次，在渲染时直接复用
+		事件监听缓存
+			子主题
+		组件渲染
+			【树结构打平】区块包含其所有带更新类型标记的后代节点，编译后为一个包含所有动态的后代节点数组
+		生命周期
+			onMounted/onUpdated/onUnmounted/onBeforeUpdate/onBeforeUnmount/
+		源码体积优化【tree-shaking】
+			移除一些不常用的API、函数用到时才进行打包，无用模块被优化，减少打包代码体积
+		monorepo
+nodejs
+两大框架区别
+	same
+		都有组件化思想
+		都支持服务器渲染
+		都使用虚拟dom
+		数据驱动视图
+		都有自己的构建工具
+	diff
+		数据流向不同  react 单项数据流  vue 双向数据流
+		数据变化的实现原理不同，react使用的是不可变数据，vue使用的是可变的数据
+		组件化通信的不同 react 使用回调函数来通信 vue 使用事件和回调函数
+		diff 算法不同，react 主要使用diff 队列保存需要更新那些dom,同一操作批量更新，vue 使用双向指针，边对比边更新dom
+webpack【用于现代JavaScript应用程序的静态模块打包工具】
+	体积优化：tree shaking、按需引入，代码切割
+打包速度优化：缓存、多线程打包、优化打包路径
+		代码压缩
+			【TerserPlugin】
+				extractComments
+				parallel
+				terserOptions
+				compress
+				mangle
+				topLevel
+				keep_classnames
+				keep_fnames
+		css代码压缩
+			【css-minimizer-webpack-plugin】
+				去除无用的空格
+		图片压缩
+		tree-shaking【消除死代码】
+			usedExports：通过标记某些函数是否被使用，之后通过Terser来进行优化的
+			sideEffects：跳过整个模块/文件，直接查看该文件是否有副作用
+		缩小打包域
+		代码分离
+			将代码分离到不同的bundle中，之后我们可以按需加载，或者并行加载这些文件
+	了解 loader、plugin，并且掌握一些基本常用的
+了解 babel
+		loader【文件内容的解析转换】
+			image-loader
+			less-loader
+			sass-loader
+			css-loader
+			style-loader
+			babel-loader
+			postcss-loader
+			eslint-loader
+			vue-loader
+			file-loader
+			url-loader
+		plugin【打包优化 | 资源管理 | 环境变量注入~】
+			HtmlWebpackPlugin【简化HTML文件创建】
+			mini-css-extract-plugin【分离样式文件、css提取为独立文件、支持按需加载】
+			clean-webpack-plugin【目录清理】
+			commonsChunkPlugin【提取chunks之间共享的通用模块】
+			copyWebpackPlugin【将单个文件或整个目录复制到构建目录】
+			i18nWebpackPlugin【为bundle 中增加国际化支持】
+			ignorePlugin【从bundle中排除某些模块】
+		babel
+HTML/CSS
+	盒子模型
+		怪异盒模型
+			【盒子宽度】width + margin
+		标准盒模型
+			【盒子宽度】margin + padding + width + border
+	grid 布局
+		是一个二维的布局方式，由纵横相交的两组网格线形成的框架性布局结构，能够同时处理行与列
+	BFC 块级格式化上下文
+		实际就是一个独立的容器，里面的子元素不影响外面的元素
+原生JS【各种用法及基本算法】
+	数据类型
+		引用类型
+			【object】【array】【function】
+			栈中存放的是指向堆的地址、数据存储在堆中
+		基本类型
+			【number】【string】【boolean】【undefined】【null】【symbol】
+			存储在栈中
+	数组方法
+	闭包
+		在一个内层函数中访问到其外层函数的作用域
+	作用域链
+		作用域
+			全局作用域
+			函数作用域
+			块级作用域
+		作用域链
+			当javascript中使用一个变量的时候，首先在当前作用域下寻找该变量，如果没找到会在上层作用域寻找，以此类推找到该变量或是已经找到了全局作用域，找不到则报错
+	原型链
+		原型
+			所有都有__proto__属性
+			函数有 prototype
+		原型链
+			原型对象也可能拥有原型，并从中继承方法和属性，一层一层、以此类推。这种关系常被称为原型链
+	this
+		谁调用指向谁
+		new
+			通过构建函数 new 关键字生成一个实例对象，此时 this 指向这个实例对象
+			new过程遇到return一个对象，此时this指向为返回的对象
+			如果返回一个简单类型的时候，则this指向实例对象
+			注意的是null虽然也是对象，但是此时new仍然指向实例对象
+		new绑定优先级 > 显示绑定优先级 > 隐式绑定优先级 > 默认绑定优先级
+	执行栈
+		【调用栈】后进先出结构、用于存储在代码执行期间创建的所有执行上下文
+	判断变量类型
+		typeof
+			number
+			string
+			boolean
+			symbol
+			function
+			其余都为【object】
+			引用类型除了【function】其余都为【Object】
+		instanceof
+			返回的是 boolean值
+			基本类型不能准确判断
+		Object.prototype.toString.call()
+	ajax
+		一种创建交互式网页应用的网页开发技术，可以在不重新加载整个网页的情况下，与服务器交换数据，并且更新部分网页
+		【原理】简单来说通过XmlHttpRequest对象来向服务器发异步请求，从服务器获得数据，然后用JavaScript来操作DOM而更新页面
+	正则
+		用一种描述性的语言定义一个规则
+	事件循环机制
+		实现单线程非阻塞的方法就是事件循环
+		宏任务
+			script
+			seTimeout / setInterval
+			postMessage
+		微任务
+			promise
+	尾递归
+		即在函数尾位置调用自身【每次返回的是一个新的函数、不带上一个函数的参数、也就不需要存储上一个函数，尾递归只需要保存一个调用栈】
+	内存泄露
+		由于疏忽或错误造成程序未能释放已经不再使用的内存，并非指在物理上的消失，而是在应用程序分配某段内存后，由于设计错误，导致在释放该段内存之前就失去了对该段内存的控制造成了内存的浪费
+	函数式编程
+		强调结果而非执行的而过程
+		纯函数
+			只又传入参数决定，不被外部变量控制
+		高阶函数
+			以函数为参数或者以函数作为返回值的函数
+		函数柯里化
+			把一个多函数转换成一个嵌套的一元函数过程
+	单点登录【sso】
+		多个应用系统中，用户只需要登录一次就可以访问所有相互信任的应用系统
+	ES6
+		SET
+		MAP
+		proxy
+浏览器渲染原理
+	url发生了啥
+		输入url 后先查找缓存
+		DNS解析出ip和端口
+		TCP连接
+			三次握手【HTTPS 会多一个TLS协商】
+				客户端给服务端发送一个SYN报文，指明客户端的初始化序列号
+				服务端接受到客户端的SYN报文后，以自己的SYN报文作为应答
+				客户端收到SYN报文后，发送一个ACK报文，服务端收到后建立连接
+		发送请求，解析请求头参数，查看缓存类型，如果缓存未失效返回304，失效从新返回数据
+		服务器返回数据后断开连接
+		准备渲染进程  ---> 提交文档，构建文档树 【浏览器进程将网络进程中的HTML数据提交给渲染进程】
+		渲染阶段
+			构建DOM树
+			样式计算【构建CSS规则树】
+			布局阶段【合成渲染树】
+			分层生成图层树
+			图层绘制
+			栅格化操作【生成位图】
+			合成显示
+	缓存机制
+	垃圾回收机制
+	性能优化
+	HTTP
+		【get/post】区别
+			get请求会被浏览器主动cache，而post不会，除非手动设置
+			get 只能进行url 编码，而post 支持多种编码方式
+			get 请求参数会被完整保留在浏览器历史记录里面，而post 中的参数不会被保留
+			get 请求在url 中传送的参数是有长度限制的，而post 没有
+			get 只接受asrll 字符，而post 没有限制
+			get 参数通过url 传递，post 放在request body 中
+			get 比post 安全性差，参数暴漏在url 不能传递敏感信息
+			get浏览器回退时是无害的，而post会再次提交请求
+		协议
+			UDP
+				面向数据报、每个字段占用2个字节，标题短。开销小
+				报头4个字节
+				特点
+					UDP不提供复杂的控制机制，利用ip提供面向无连接的通信问题
+					传输途中出现丢包，udp也不负责重新发
+					当包的到达顺序出现乱序时，UDP没有纠正的功能。无法进行流量控制等避免网络拥塞行为
+			TCP
+				传输控制协议，可靠面向字节流的通信协议
+				报头20个字节
+			区别
+				TCP可靠、UDP不可靠
+				TCP面向连接、UDP无连接
+				TCP面向字节流、UDP面向报文
+				TCP传输效率低、UDP传输效率高
+				TCP全双工、UDP一对一，一对多，多对一，多对多
+				TCP滑动窗口流浪控制、UDP无
+				TCP慢开始，拥塞避免，快重传，快恢复
+				TCP 传输效率慢,UDP 传输效率快
+		DNS
+			dns 域名系统，是互联网一项服务，是进行域名和相对应的ip地址进行转换的服务器
+		CDN【内容分发网络】
+			根据用户位置分配最近的资源
+		websocket
+			网络传输协议，单个TCP连接上进行全双工通信
+			采用二进制帧结构
+			适用场景
+				弹幕
+				媒体聊天
+				协同编辑
+				股票基金实时更新
+	网络安全
+		web安全
+			XSS（跨站脚本攻击）
+			CSRF（跨站请求伪造）
+			SQL注入攻击
+VUE源码分析
+	响应式数据原理
+		initMixin ---> 初始化方法( 代码拆分 )
+			_init 初始化方法挂载在 vue 原型,传入 options调用
+				initProp
+				initMethod
+				initData
+					响应式数据的劫持
+						对象 defineReactive使用Object.defineObject进行get / set劫持
+							get中每个属性dep实例保存自己的watch
+							set中进行派发更新dep.notify()通知相关属性的watch进行更新刷新视图
+						数组 重写数组方法/数组内部的对象继续进行劫持
+					代理 _data 属性
+				initComputed
+				initWatch
+	模板编译原理
+		子主题
