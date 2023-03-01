@@ -1,0 +1,365 @@
+    // 继承
+    // 原型链继承  多个实例继承相互影响
+    // function prototypeInherit() {
+    //   function SuperType() {
+    //     this.colors = ['green', 'blue', 'yellow']
+    //   }
+
+    //   function SubType() { }
+    //   SubType.prototype = new SuperType()
+
+    //   let instance01 = new SubType()
+    //   instance01.colors.push('black')
+    //   let instance02 = new SubType()
+    //   console.log(instance02.colors);
+    //   console.log(instance01.prototype === instance02.prototype);
+    // }
+    // // prototypeInherit()
+
+    // // 构造函数继承 不能继承原型上的属性和方法
+    // function funInherit() {
+    //   function SuperType() {
+    //     this.colors = ['green', 'blue', 'yellow']
+    //   }
+
+    //   SuperType.prototype.age = 18
+    //   function SubType() {
+    //     SuperType.call(this)
+    //   }
+
+    //   let instance01 = new SubType()
+    //   instance01.colors.push('red')
+    //   let instance02 = new SubType()
+    //   console.log(instance02.colors);
+    //   console.log(instance02.age);
+    // }
+    // funInherit()
+
+    // // 组合继承   数据双份
+    // function combineIhnerit() {
+    //   function SuperType(name) {
+    //     this.colors = ['green', 'blue', 'yellow']
+    //     this.name = name
+    //   }
+
+    //   SuperType.prototype.sayName = function () {
+    //     console.log(this.name);
+    //   }
+
+    //   function SubType(name, age) {
+    //     SuperType.call(this, name)
+    //     this.age = age
+    //   }
+
+    //   SubType.prototype = new SuperType()
+    //   SubType.prototype.constructor = SubType
+
+    //   let instance01 = new SubType('小米', 25)
+    //   instance01.colors.push('红米')
+    //   console.log(instance01);
+    // }
+    // combineIhnerit()
+
+    // 寄生组合式继承   借助构造函数传递参数和寄生模式实习继承
+    // function combineParasitic() {
+    //   function inheritPrototype(subType, superType) {
+    //     let prototype = Object.create(superType.prototype)
+    //     prototype.constructor = subType
+    //     subType.prototype = prototype
+    //   }
+
+    //   function SuperType(name) {
+    //     this.name = name
+    //     this.colors = ['red', 'blue', 'green']
+    //   }
+
+    //   SuperType.prototype.sayName = function () {
+    //     console.log(this.name);
+    //   }
+
+    //   function SubType(name, age) {
+    //     SuperType.call(this, name)
+    //     this.age = age
+    //   }
+
+    //   inheritPrototype(SubType, SuperType)
+
+    //   SubType.prototype.sayAge = function () {
+    //     console.log(this.age);
+    //   }
+
+    //   let instance01 = new SubType('小米', 21)
+    //   console.log(instance01);
+    // }
+
+    // 事件循环机制
+    // async function async1() {
+    //   console.log('async1 start')
+    //   await async2()
+    //   console.log('async1 end')
+    // }
+    // async function async2() {
+    //   console.log('async2')
+    // }
+    // console.log('script start')
+    // setTimeout(function () {
+    //   console.log('settimeout')
+    // })
+    // async1()
+    // new Promise(function (resolve) {
+    //   console.log('promise1')
+    //   resolve()
+    // }).then(function () {
+    //   console.log('promise2')
+    // })
+    // console.log('script end')
+
+    // 尾递归实现斐波那契求和
+    // function fac(n, start = 1, tatal = 1) {
+    //   if (n <= 2) {
+    //     return tatal
+    //   }
+    //   return fac(n - 1, tatal, tatal + start)
+    // }
+    // console.log(fac(60));
+
+    // // 求五十以内的斐波那契数
+    // function fac_nums(n) {
+    //   if (n === 1 || n === 2) return 1
+
+    //   let start = 0
+    //   let end = 1
+    //   let result = 0
+    //   let arr = []
+    //   for (let i = 0; i < n; i++) {
+    //     result = start + end
+    //     if (result === start + end) {
+    //       arr.push(result)
+    //     }
+    //     start = end
+    //     end = result
+    //   }
+    //   return arr
+    // }
+    // console.log(fac_nums(20));
+
+    // combineParasitic()
+    // 防抖节流
+    // 节流
+    // function throttle(fn, delay = 500) {
+    //   let timer = null
+    //   return function (...args) {
+    //     if (!timer) {
+    //       timer = setTimeout(() => {
+    //         fn.apply(this, args)
+    //         clearTimeout(timer)
+    //       }, delay)
+    //     }
+    //   }
+    // }
+
+    // //  防抖
+    // function debounce(fn, wait) {
+    //   let timer = null
+    //   return function () {
+    //     let context = this;
+    //     let args = arguments;
+    //     clearTimeout(timer)
+    //     timer = setTimeout(() => {
+    //       fn.apply(context, args)
+    //     }, wait)
+    //   }
+    // }
+
+    // 判断一个字符串中出现的次数最多的字符，统计这个次数
+    // function getStrCount() {
+    //   let obj = {}
+    //   let str = 'llmmllmmldkdgddl'
+    //   str.split('').map(item => obj[item] = obj[item] ? ++obj[item] : 1)
+    //   let k = { max: 0 }
+    //   for (let [key, val] of Object.entries(obj)) {
+    //     if (k.max < val) {
+    //       k.max = val
+    //       k[key] = val
+    //     }
+    //   }
+    //   delete (k['max'])
+    //   console.log(obj, k);
+    // }
+    // getStrCount()
+
+    // 求一个字符串的字节长度
+    // function getStrByteLength() {
+    //   let str = 'strkomuvrzws上的飞机'
+    //   let sum = 0
+    //   for (let i = 0; i < str.length; i++) {
+    //     sum += str.charCodeAt(i) > 255 ? 2 : 1
+    //   }
+    //   return sum
+    // }
+    // console.log(getStrByteLength());
+
+    // 去掉一个数组的重复元素
+    // function delRepElements() {
+      // let arr = [1, 2, 3, 4, 5, 6, 8, 9, 2, 8]
+      // let result = new Set(arr)
+      // console.log(result);
+
+      // const objArr = [
+      //   { id: 8, content: { text: 'First' } },
+      //   { id: 4 },
+      //   { id: 1 },
+      //   { id: 2, content: { test: null } }
+      // ]
+      // let result = objArr.sort((a, b) => a.id - b.id)
+      // console.log(result);
+    // }
+    // delRepElements()
+
+    // 两数之和 给定nums=[],target 找出两数之和不能重复使用元素
+    // let nums = [2, 7, 11, 15]
+    // function getAddSon(nums, target) {
+      // for (let i = 0; i < nums.length; i++) {
+      //   let sub = target - nums[i]
+      //   let k = nums.slice(i + 1)
+      //   if (k.includes(sub)) {
+      //     let index = k.indexOf(sub)
+      //     return [i, index + i + 1]
+      //   }
+      // }
+
+      // let k = [...nums.reverse()]
+      // nums.reverse()
+      // let length = nums.length
+      // for (let i = 0; i < nums.length; i++) {
+      //   let sub = target - nums[i]
+      //   let index = k.indexOf(sub)
+      //   if (index >= 0 && (length - index - 1) !== i) {
+      //     return [i, length - index - 1]
+      //   }
+      // }
+    // }
+    // getAddSon(nums, 9);
+    // 爬楼梯
+    // const StairsArr = [1, 20, 3, 45, 1, 8, 2]
+    // function climbStairs(arr) {
+    //   const less = []
+    //   less[0] = 0
+    //   less[1] = 0
+    //   for (let n = 2; n < arr.length; n++) {
+    //     less[n] = Math.min(less[n - 1] + arr[n - 1], less[n - 2] + arr[n - 2])
+    //   }
+    //   return Math.max(...less)
+    // }
+    // console.log(climbStairs(StairsArr));
+
+    // 数组中第K个最大元素
+    // const arr = [3, 2, 3, 1, 2, 4, 5, 5, 6]
+    // function getMaxKey(arr, key) {
+    //   return arr.sort((a, b) => a - b)[arr.length - key]
+    // }
+    // console.log(getMaxKey(arr, 3));
+
+    // 用 js 实现一个堆
+    //  初始化一个堆
+    // class MinHeap {
+    //   constructor() {
+    //     this.heap = []
+    //   }
+
+    //   // 交换位置
+    //   swap(i1, i2) {
+    //     const temp = this.heap[i1]
+    //     this.heap[i1] = this.heap[i2]
+    //     this.heap[i2] = temp
+    //   }
+
+    //   // 获取父节点位置
+    //   getParentIndex(index) {
+    //     return Math.floor((index - 1) / 2)
+    //   }
+
+    //   // 获取左侧节点位置
+    //   getLeftIndex(index) {
+    //     return 2 * index + 1
+    //   }
+
+    //   // 获取右侧节点位置
+    //   getRightIndex(index) {
+    //     return 2 * index + 2
+    //   }
+
+    //   // 上移
+    //   shiftUp(index) {
+    //     if (index === 0) return
+
+    //     let parentIndex = this.getParentIndex(index)
+
+    //     if (this.heap[parentIndex] > this.heap[index]) {
+    //       this.swap(parentIndex, index)
+    //       this.shiftUp(parentIndex)
+    //     }
+    //   }
+
+    //   // 下移
+    //   shiftDown(index) {
+    //     const leftIndex = this.getLeftIndex(index)
+    //     const rightIndex = this.getRightIndex(index)
+    //     if (this.heap[leftIndex] < this.heap[index]) {
+    //       this.swap(leftIndex, index)
+    //       this.shiftDown(leftIndex)
+    //     }
+    //     if (this.heap[rightIndex] < this.heap[index]) {
+    //       this.swap(rightIndex, index)
+    //       this.shiftDown(rightIndex)
+    //     }
+    //   }
+
+    //   // 插入节点
+    //   insertNode(value) {
+    //     this.heap.push(value)
+    //     this.shiftUp(this.heap.length - 1)
+    //   }
+
+    //   popNode(value) {
+    //     this.heap[0] = this.heap.pop()
+    //     this.shiftDown(0)
+    //   }
+
+    //   // 获取栈顶的值
+    //   peek() {
+    //     return this.heap[0]
+    //   }
+
+    //   // 获取堆的大小
+    //   getSize() {
+    //     return this.heap.length
+    //   }
+    // }
+
+    // let findKthLargest = (nums, k) => {
+    //   const h = new MinHeap()
+    //   nums.forEach(n => {
+    //     h.insertNode(n)
+    //     if (h.getSize() > k) {
+    //       h.popNode()
+    //     }
+    //   })
+    //   return h.peek()
+    // }
+
+    // console.log(findKthLargest([3, 2, 3, 1, 2, 4, 5, 5, 6], 3));
+
+    //一只青蛙一次可以跳上1级台阶，也可以跳上2级台阶。求该青蛙跳上一个 10 级的台阶总共有多少种跳法。
+    // 动态规划解决( 实际为斐波那契数列问题 )
+    // function jumpSteps(n) {
+    //   let arr = []
+    //   arr[1] = 1
+    //   arr[2] = 2
+    //   for (let i = 3; i <= n; i++) {
+    //     arr[i] = arr[i - 1] + arr[i - 2]
+    //   }
+    //   return arr[n]
+    // }
+
+    // console.log(jumpSteps(10));
